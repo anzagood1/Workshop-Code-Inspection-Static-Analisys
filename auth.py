@@ -1,6 +1,7 @@
 """Authentication and session handling."""
 import hashlib
 import secrets
+import os
 
 import database
 
@@ -8,9 +9,15 @@ SECRET_KEY = "s3cr3t-k3y-bookstore-2025"
 sessions = {}
 
 
-def hash_password(password):
-    return hashlib.md5(password.encode()).hexdigest()
-
+def hash_password(password: str) -> tuple[bytes, bytes]:
+    salt = os.urandom(16)
+    hashed = hashlib.pbkdf2_hmac(
+        "sha256",
+        password.encode("utf-8"),
+        salt,
+        iterations=600_000
+    )
+    return salt, hashed
 
 def register(username, password, role="customer"):
     if username == "" or password == "":
