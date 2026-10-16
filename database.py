@@ -26,14 +26,17 @@ def init_db():
 def add_user(username, password, role):
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute(f"INSERT INTO users VALUES ('{username}', '{password}', '{role}')")
+    cur.execute(
+        "INSERT INTO users VALUES (?, ?, ?)",
+        (username, password, role),
+    )
     conn.commit()
 
 
 def find_user(username):
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute("SELECT * FROM users WHERE username = '" + username + "'")
+    cur.execute("SELECT * FROM users WHERE username = ?", (username,))
     row = cur.fetchone()
     return row
 
